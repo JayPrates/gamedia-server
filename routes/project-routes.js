@@ -37,6 +37,7 @@ router.post("/games/:gameId", async (req, res) => {
 			likes,
 			likedBy: [],
 			mediaUrl,
+			userImg: thisUsa[0].userImg,
 			// userImage,
 		});
 		res.status(200).json(response);

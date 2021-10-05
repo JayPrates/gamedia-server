@@ -14,7 +14,7 @@ const storage = new CloudinaryStorage({
 	params: {
 		folder: "projects",
 		allowedFormats: ["jpg", "png", 'mp4'],
-		resource_type: ['raw', 'image'],
+		resource_type: 'auto',
 	},
 	filename: function (req, file, cb) {
 		cb(null, file.originalname);
