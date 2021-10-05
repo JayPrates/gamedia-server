@@ -15,6 +15,7 @@ router.get("/games/:gameId", async (req, res) => {
 
 //In React, there should be a corresponding form to send this information
 router.post("/games/:gameId", async (req, res) => {
+
 	const { title, author,likes, description, gameTag, gameName, userImage, mediaUrl, likedBy } =
 		req.body;
 
@@ -26,18 +27,18 @@ router.post("/games/:gameId", async (req, res) => {
 	}
 
 	try {
-		const thisUsa = await User.find(req.session.currentUser);
+		const thisUsa = await User.findById(req.session.currentUser._id);
 		console.log(thisUsa);
 		const response = await Post.create({
 			title,
-			author: thisUsa[0].username,
+			author: thisUsa.username,
 			description,
 			gameName,
 			gameTag,
 			likes,
 			likedBy: [],
 			mediaUrl,
-			userImg: thisUsa[0].userImg,
+			userImg: thisUsa.userImg,
 			// userImage,
 		});
 		res.status(200).json(response);
@@ -79,21 +80,22 @@ router.put("/post/:id", async (req, res) => {
 
 	console.log(postId);
 
-	const thisUsa = await User.find(req.session.currentUser);
+	const thisUsa = await User.findById(req.session.currentUser._id);
 	const thisPost = await Post.findById(req.params.id);
+	console.log(thisUsa);
 
 
 		try{
-			if(thisPost.likedBy.includes(thisUsa[0].username)) {
+			if(thisPost.likedBy.includes(thisUsa.username)) {
 				const updatePost = await Post.findByIdAndUpdate(req.params.id, {
 					likes: thisPost.likes - 1,
-					likedBy: thisPost.likedBy.filter(e => e !== thisUsa[0].username)
+					likedBy: thisPost.likedBy.filter(e => e !== thisUsa.username)
 				}, {new: true});
 				res.status(200).json(updatePost);
 			} else {
 				const updatePost = await Post.findByIdAndUpdate(req.params.id, {
 					likes: thisPost.likes + 1,
-					likedBy: [thisUsa[0].username, ...thisPost.likedBy],
+					likedBy: [thisUsa.username, ...thisPost.likedBy],
 				}, {new: true});
 				res.status(200).json(updatePost);
 			}

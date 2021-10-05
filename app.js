@@ -9,6 +9,7 @@ require("./db");
 // Handles http requests (express is node js framework)
 // https://www.npmjs.com/package/express
 const express = require("express");
+const session = require("express-session");
 
 // Handles the handlebars
 // https://www.npmjs.com/package/hbs
@@ -19,7 +20,6 @@ const app = express();
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
 
-const session = require("express-session");
 app.set("trust propxy", 1); //Security requirements from Heroku
 app.use(
   session({
