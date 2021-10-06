@@ -16,7 +16,7 @@ router.get("/games/:gameId", async (req, res) => {
 //In React, there should be a corresponding form to send this information
 router.post("/games/:gameId", async (req, res) => {
 
-	const { title, author,likes, description, gameTag, gameName, userImage, mediaUrl, likedBy } =
+	const { title, author, likes, description, gameTag, gameName, userImage, mediaUrl, likedBy } =
 		req.body;
 
 
@@ -39,6 +39,7 @@ router.post("/games/:gameId", async (req, res) => {
 			likedBy: [],
 			mediaUrl,
 			userImg: thisUsa.userImg,
+			favoriteGames: [],
 			// userImage,
 		});
 		res.status(200).json(response);
@@ -47,16 +48,6 @@ router.post("/games/:gameId", async (req, res) => {
 	}
 });
 
-/* router.delete("/posts/:id", async (req, res) => {
-	try {
-		await Post.findByIdAndRemove(req.params.id);
-		res.status(200).json({
-			message: `Post with id ${req.params.id} was deleted.`,
-		});
-	} catch (e) {
-		res.status(500).json({ message: e });
-	}
-}); */
 
 router.get("/post/:id", async (req, res) => {
 	try {
@@ -85,24 +76,95 @@ router.put("/post/:id", async (req, res) => {
 	console.log(thisUsa);
 
 
-		try{
-			if(thisPost.likedBy.includes(thisUsa.username)) {
-				const updatePost = await Post.findByIdAndUpdate(req.params.id, {
-					likes: thisPost.likes - 1,
-					likedBy: thisPost.likedBy.filter(e => e !== thisUsa.username)
-				}, {new: true});
-				res.status(200).json(updatePost);
-			} else {
-				const updatePost = await Post.findByIdAndUpdate(req.params.id, {
-					likes: thisPost.likes + 1,
-					likedBy: [thisUsa.username, ...thisPost.likedBy],
-				}, {new: true});
-				res.status(200).json(updatePost);
-			}
-		} catch (e) {
-			res.status(500).json({message: e.message});
+	try {
+		if (thisPost.likedBy.includes(thisUsa.username)) {
+			const updatePost = await Post.findByIdAndUpdate(req.params.id, {
+				likes: thisPost.likes - 1,
+				likedBy: thisPost.likedBy.filter(e => e !== thisUsa.username)
+			}, { new: true });
+			res.status(200).json(updatePost);
+		} else {
+			const updatePost = await Post.findByIdAndUpdate(req.params.id, {
+				likes: thisPost.likes + 1,
+				likedBy: [thisUsa.username, ...thisPost.likedBy],
+			}, { new: true });
+			res.status(200).json(updatePost);
 		}
-	})
+	} catch (e) {
+		res.status(500).json({ message: e.message });
+	}
+});
+
+
+//ROUTE FOR FAVORITE GAMES
+router.put("/favorite", async (req, res) => {
+	const { favoriteGames } = req.body;
+
+	const thisUsa = await User.findById(req.session.currentUser._id);
+	console.log(thisUsa);
+
+
+	try {
+		if (thisUsa.favoriteGames.includes(favoriteGames)) {
+			return;
+		} else {
+			const updateFavorites = await User.findByIdAndUpdate(thisUsa._id, {
+				favoriteGames: [favoriteGames, ...thisUsa.favoriteGames],
+			})
+			res.status(200).json(updateFavorites);
+		}
+	} catch (e) {
+		res.status(500).json({ message: e.message });
+	}
+});
+
+router.get("/profile", async (req, res) => {
+
+	try {
+
+		const user = await User.findById(req.session.currentUser._id);
+
+		res.status(200).json(user);
+
+	} catch (e) {
+
+		res.status(500).json({ message: e.message });
+
+	}
+
+});
+
+router.put("/profile", fileUpload.single("file"), async (req, res) => {
+
+	const { userImg } = req.body;
+
+	try {
+
+		const updateUserImg = await User.findByIdAndUpdate(
+
+			req.session.currentUser._id,
+
+			{
+
+				userImg: userImg,
+
+			},
+
+			{ new: true }
+
+		);
+
+		console.log(updateUserImg);
+
+		res.status(200).json(updateUserImg);
+
+	} catch (e) {
+
+		res.status(500).json({ message: e.message });
+
+	}
+
+});
 
 
 
