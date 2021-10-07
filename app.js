@@ -24,12 +24,14 @@ app.set("trust propxy", 1); //Security requirements from Heroku
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
+    saveUninitialized: true,
+    resave: false,
     cookie: {
-   //   sameSite: true,
+      //   sameSite: true,
       sameSite: "none", //both fe and be are running on the same hostname
+      secure: true,
       httpOnly: false, //  httpOnly: false, //we are not using https
       maxAge: 600000, //session time
-      secure:true
     },
     rolling: true,
   })
@@ -37,16 +39,16 @@ app.use(
 
 
 function getCurrentLoggedUser(req, res, next) {
-	if (req.session && req.session.currentUser) {
-		app.locals.loggedInUser = req.session.currentUser.username; //local variable from express
-	} else { 
-		app.locals.loggedInUser = "";
-  
-	}
-	next(); //so we can leave the middleware
+  if (req.session && req.session.currentUser) {
+    app.locals.loggedInUser = req.session.currentUser.username; //local variable from express
+  } else {
+    app.locals.loggedInUser = "";
+
   }
-  
-  app.use(getCurrentLoggedUser);
+  next(); //so we can leave the middleware
+}
+
+app.use(getCurrentLoggedUser);
 
 // default value for title local
 const projectName = "game-app-server";
