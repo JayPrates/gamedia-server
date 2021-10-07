@@ -28,7 +28,7 @@ app.use(
     resave: false,
     cookie: {
       //   sameSite: true,
-      sameSite: "none", //both fe and be are running on the same hostname
+      sameSite: false, //both fe and be are running on the same hostname
       secure: true,
       httpOnly: false, //  httpOnly: false, //we are not using https
       maxAge: 600000, //session time
