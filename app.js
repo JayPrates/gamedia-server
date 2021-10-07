@@ -25,9 +25,11 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     cookie: {
-      sameSite: true, //both fe and be are running on the same hostname
-      httpOnly: true, //we are not using https
+      /* sameSite: true */
+      sameSite: "none", //both fe and be are running on the same hostname
+      httpOnly: false, //we are not using https
       maxAge: 600000, //session time
+      secure:true
     },
     rolling: true,
   })
@@ -60,6 +62,7 @@ const project = require('./routes/project-routes')
 app.use('/', project);
 
 const auth = require('./routes/auth-routes');
+const { none } = require("./config/cloudinary");
 app.use('/', auth);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
