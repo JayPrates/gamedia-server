@@ -20,18 +20,17 @@ const app = express();
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
 
-app.set("trust propxy", 1); //Security requirements from Heroku
+app.set("trust proxy", 1); //Security requirements from Heroku
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    saveUninitialized: true,
-    resave: false,
     cookie: {
-      //   sameSite: true,
-      sameSite: "none", //both fe and be are running on the same hostname
-      secure: true,
-      httpOnly: false, //  httpOnly: false, //we are not using https
-      maxAge: 600000, //session time
+      // sameSite: "none", // uncomment to deploy
+      sameSite: true, // both fe and be are running on the same hostname
+      // httpOnly: false, 
+      httpOnly: true, // we are not using https
+      // maxAge: 60000, // session time
+      // secure: true,
     },
     rolling: true,
   })
