@@ -13,6 +13,7 @@ const postSchema = new Schema({
 	likedBy: Array,
 	mediaUrl: String,
 	userImg: String,
+	comments: Array,
 },
 {
 	timestamps:true,

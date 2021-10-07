@@ -40,6 +40,7 @@ router.post("/games/:gameId", async (req, res) => {
 			mediaUrl,
 			userImg: thisUsa.userImg,
 			favoriteGames: [],
+			comments: [],
 			// userImage,
 		});
 		res.status(200).json(response);
@@ -113,6 +114,22 @@ router.put("/favorite", async (req, res) => {
 			})
 			res.status(200).json(updateFavorites);
 		}
+	} catch (e) {
+		res.status(500).json({ message: e.message });
+	}
+});
+
+router.put("/comments/:id", async (req, res) => {
+	const {comments} = req.body;
+	const thisPost = await Post.findById(req.params.id);
+	const thisUsa = await User.findById(req.session.currentUser._id);
+	console.log(comments)
+
+	try {
+		const postCommented = await Post.findByIdAndUpdate(req.params.id, {
+			comments: [{thisComment: comments, theUser:  thisUsa.username, theUserImg: thisUsa.userImg}, ...thisPost.comments],
+		});
+		res.status(200).json(postCommented);
 	} catch (e) {
 		res.status(500).json({ message: e.message });
 	}
